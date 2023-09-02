@@ -15,7 +15,7 @@ public class Consumer implements Transmission.MessageMuncher, Runnable {
 
     public Consumer(Transmission transmission) {
         this.transmission = transmission;
-        this.atomicInteger = new AtomicInteger();
+        this.atomicInteger = new AtomicInteger(0);
     }
 
 

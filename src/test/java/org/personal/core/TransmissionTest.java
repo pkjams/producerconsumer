@@ -42,7 +42,7 @@ class TransmissionTest {
 
         // Assert
         assertEquals(1, result);
-        verify(ringBuffer, times(1)).publishEvent(eventTranslator, message);
+        verify(ringBuffer, times(1)).publish((anyLong()));
     }
 
     @Test

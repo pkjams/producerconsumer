@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 public class Main {
     public static void main(String[] args) {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
-        int NUMBER_OF_MESSAGES = 10_000;
+        int NUMBER_OF_MESSAGES = 100_000;
 
         //create the API
         Transmission transmission = new Transmission(2048, executorService);
