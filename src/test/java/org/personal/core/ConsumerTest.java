@@ -46,7 +46,6 @@ class ConsumerTest {
 
         // Assert
         assertFalse(result);
-        // You can add more assertions here based on your specific requirements
     }
 
     @Test
