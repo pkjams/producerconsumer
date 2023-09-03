@@ -17,6 +17,10 @@ public class Producer implements Runnable {
     public Producer(Transmission transmission,
                     Supplier<Message> messageSupplier,
                     int howManyMessages) {
+        if(transmission == null || messageSupplier == null) {
+            throw new IllegalArgumentException("transmission and/or messageSupplier cannot be null");
+        }
+
         this.transmission = transmission;
         this.messageSupplier = messageSupplier;
         this.howManyMessages = howManyMessages;

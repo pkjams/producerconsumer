@@ -14,6 +14,9 @@ public class Consumer implements Transmission.MessageMuncher, Runnable {
     private volatile boolean terminateLoop;
 
     public Consumer(Transmission transmission) {
+        if(transmission == null) {
+            throw new IllegalArgumentException("transmission cannot be null");
+        }
         this.transmission = transmission;
         this.atomicInteger = new AtomicInteger(0);
     }

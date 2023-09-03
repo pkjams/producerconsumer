@@ -7,6 +7,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.function.Supplier;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class ProducerTest {
@@ -70,4 +71,15 @@ class ProducerTest {
         // Assert
         verify(transmission, times(numberOfMessages)).write(message);
     }
+
+    @Test
+    public void verifyProducerWhenSupplierIsNull() {
+        assertThrows(IllegalArgumentException.class,() -> new Producer(transmission, null, 1), "transmission and/or messageSupplier cannot be null");
+    }
+
+    @Test
+    public void verifyProducerWhenTransmissionIsNull() {
+        assertThrows(IllegalArgumentException.class,() -> new Producer(null, messageSupplier, 1), "transmission and/or messageSupplier cannot be null");
+    }
+
 }

@@ -24,4 +24,16 @@ class MessageTest {
         assertThrows(IllegalArgumentException.class,
                 () -> new Message("ABCDEFG".toCharArray(), 12345L, true));
     }
+
+    @Test
+    public void verifyMessageNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Message(null, 12345L, true));
+    }
+
+    @Test
+    public void verifyMessageEmpty() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Message(new char[]{}, 12345L, true));
+    }
 }

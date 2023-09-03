@@ -8,7 +8,7 @@ public class Message {
 
 
     public Message(char[] fixedString, long longValue, boolean booleanValue) {
-        if (fixedString.length != 8) {
+        if (fixedString ==null || fixedString.length != 8) {
             throw new IllegalArgumentException("fixedString must be exactly 8 characters");
         }
         System.arraycopy(fixedString, 0, this.fixedString, 0, 8);

@@ -7,8 +7,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
@@ -68,5 +67,10 @@ class ConsumerTest {
         // Assert
         // Verify that the run method calls transmission.read(10, this) as expected
         verify(transmission, atLeastOnce()).read(10, consumer);
+    }
+
+    @Test
+    public void verifyConsumerWithNullArgument() {
+        assertThrows(IllegalArgumentException.class,() -> new Consumer(null), "transmission cannot be null");
     }
 }
