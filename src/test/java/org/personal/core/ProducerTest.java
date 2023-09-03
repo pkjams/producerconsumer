@@ -82,4 +82,8 @@ class ProducerTest {
         assertThrows(IllegalArgumentException.class,() -> new Producer(null, messageSupplier, 1), "transmission and/or messageSupplier cannot be null");
     }
 
+    @Test
+    public void verifyProducerWhenInvalidHowManyMessages() {
+        assertThrows(IllegalArgumentException.class,() -> new Producer(transmission, messageSupplier, 0), "howManyMessages must be greater than zero");
+    }
 }
