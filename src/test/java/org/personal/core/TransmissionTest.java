@@ -1,6 +1,5 @@
 package org.personal.core;
 
-import com.lmax.disruptor.EventTranslatorOneArg;
 import com.lmax.disruptor.RingBuffer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,15 +15,11 @@ import static org.mockito.Mockito.*;
 class TransmissionTest {
 
     @Mock
-    private RingBuffer<MessageEvent> ringBuffer;
-
-    @Mock
-    private EventTranslatorOneArg<MessageEvent, Message> eventTranslator;
+    private RingBuffer<Message> ringBuffer;
 
     @Mock
     private Transmission.MessageEventHandler messageEventHandler;
 
-    @Mock
     private Message message;
 
     private Transmission transmission;
@@ -32,13 +27,15 @@ class TransmissionTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        transmission = new Transmission(ringBuffer, eventTranslator, messageEventHandler, Executors.newFixedThreadPool(1));
+        message = new Message();
+        transmission = new Transmission(ringBuffer, messageEventHandler, Executors.newFixedThreadPool(1));
     }
 
     @Test
     public void verifyValidMessageWrite() {
+        when(ringBuffer.get(anyLong())).thenReturn(message);
         // Act
-        int result = transmission.write(message);
+        int result = transmission.write(new Message());
 
         // Assert
         assertEquals(1, result);
@@ -69,8 +66,7 @@ class TransmissionTest {
     @Test
     public void verifyOnEvent() throws Exception {
         // Arrange
-        MessageEvent event = new MessageEvent();
-        event.setMessage(message);
+        Message event = new Message();
         Transmission.MessageMuncher messageMuncher = mock(Transmission.MessageMuncher.class);
         Transmission.MessageEventHandler messageEventHandler = new Transmission.MessageEventHandler();
         messageEventHandler.setMessageMuncher(messageMuncher);
@@ -80,6 +76,6 @@ class TransmissionTest {
         messageEventHandler.onEvent(event, 1, true);
 
         // Assert
-        verify(messageMuncher, times(1)).on(message);
+        verify(messageMuncher, times(1)).on(event);
     }
 }

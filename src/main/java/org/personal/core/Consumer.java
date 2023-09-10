@@ -3,30 +3,25 @@ package org.personal.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class Consumer implements Transmission.MessageMuncher, Runnable {
     private static final Logger logger = LogManager.getLogger(Consumer.class);
 
     private final Transmission transmission;
-    private final AtomicInteger atomicInteger;
 
     private volatile boolean terminateLoop;
 
     public Consumer(Transmission transmission) {
-        if(transmission == null) {
+        if (transmission == null) {
             throw new IllegalArgumentException("transmission cannot be null");
         }
         this.transmission = transmission;
-        this.atomicInteger = new AtomicInteger(0);
     }
 
 
     @Override
     public boolean on(Message m) {
         if (m != null) {
-            int messageCount = atomicInteger.incrementAndGet();
-            logger.info("{} Received {}", messageCount, m);
+            logger.info("Received {}", m);
             return true;
         }
         return false;

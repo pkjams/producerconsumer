@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Mian class to show the demo of producer and consumer making use of transmission to pass
+ * Main class to show the demo of producer and consumer making use of transmission to pass
  * Message
  */
 public class Main {
@@ -18,7 +18,7 @@ public class Main {
 
         //producer on its own thread to 'sent' the Message via transmission API
         Producer producer = new Producer(transmission,
-                () -> new Message("12345678".toCharArray(), 10L, true),
+                new MessageSupplier(),
                 NUMBER_OF_MESSAGES);
 
         //consumer on its own thread to 'receive' the Message via transmission API
@@ -27,4 +27,5 @@ public class Main {
         executorService.submit(producer);
         executorService.submit(consumer);
     }
+
 }

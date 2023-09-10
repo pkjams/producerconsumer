@@ -1,6 +1,9 @@
 package org.personal.core;
 
-import com.lmax.disruptor.*;
+import com.lmax.disruptor.BatchEventProcessor;
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.YieldingWaitStrategy;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,27 +13,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Transmission {
 
-    private final RingBuffer<MessageEvent> ringBuffer;
-    private final EventTranslatorOneArg<MessageEvent, Message> eventTranslator;
+    private final RingBuffer<Message> ringBuffer;
 
     private final MessageEventHandler messageEventHandler;
 
     public Transmission(int bufferSize, ExecutorService executorService) {
         this(RingBuffer.createSingleProducer(
-                        MessageEvent::new, bufferSize, new YieldingWaitStrategy()),
-                (event, sequence, arg0) -> event.setMessage(arg0),
+                        Message::new, bufferSize, new YieldingWaitStrategy()),
                 new MessageEventHandler(), executorService);
 
     }
 
-    Transmission(RingBuffer<MessageEvent> ringBuffer,
-                 EventTranslatorOneArg<MessageEvent, Message> eventTranslator,
+    Transmission(RingBuffer<Message> ringBuffer,
                  MessageEventHandler messageEventHandler,
                  ExecutorService executorService) {
         this.ringBuffer = ringBuffer;
-        this.eventTranslator = eventTranslator;
         this.messageEventHandler = messageEventHandler;
-        BatchEventProcessor<MessageEvent> batchEventProcessor = new BatchEventProcessor<>(ringBuffer, ringBuffer.newBarrier(), messageEventHandler);
+        BatchEventProcessor<Message> batchEventProcessor = new BatchEventProcessor<>(ringBuffer, ringBuffer.newBarrier(), messageEventHandler);
         ringBuffer.addGatingSequences(batchEventProcessor.getSequence());
         executorService.submit(batchEventProcessor);
     }
@@ -41,8 +40,8 @@ public class Transmission {
         }
         long sequence = ringBuffer.next();
         try {
-            MessageEvent event = ringBuffer.get(sequence);
-            eventTranslator.translateTo(event, sequence, m);
+            Message message = ringBuffer.get(sequence);
+            message.fromMessage(m);
         } finally {
             ringBuffer.publish(sequence);
         }
@@ -61,14 +60,13 @@ public class Transmission {
 
     }
 
-    static class MessageEventHandler implements EventHandler<MessageEvent> {
+    static class MessageEventHandler implements EventHandler<Message> {
+        private final AtomicInteger remainingMessages = new AtomicInteger(0);
         private volatile MessageMuncher messageMuncher;
-        private AtomicInteger remainingMessages = new AtomicInteger(0);
 
         @Override
-        public void onEvent(MessageEvent event, long sequence, boolean endOfBatch) {
+        public void onEvent(Message message, long sequence, boolean endOfBatch) {
             if (remainingMessages.get() > 0) {
-                Message message = event.getMessage();
                 if (message != null) {
                     boolean processed = messageMuncher.on(message);
                     if (processed) {

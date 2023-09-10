@@ -17,10 +17,10 @@ public class Producer implements Runnable {
     public Producer(Transmission transmission,
                     Supplier<Message> messageSupplier,
                     int howManyMessages) {
-        if(transmission == null || messageSupplier == null) {
+        if (transmission == null || messageSupplier == null) {
             throw new IllegalArgumentException("transmission and/or messageSupplier cannot be null");
         }
-        if(howManyMessages <= 0){
+        if (howManyMessages <= 0) {
             throw new IllegalArgumentException("howManyMessages must be greater than zero");
         }
         this.transmission = transmission;
